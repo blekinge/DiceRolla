@@ -1,13 +1,10 @@
-package dk.blekinge.diceroller;
+package dk.blekinge.dicerolla;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
-import static android.R.id.message;
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity {
 

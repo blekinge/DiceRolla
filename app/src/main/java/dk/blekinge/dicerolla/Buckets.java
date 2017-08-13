@@ -1,4 +1,4 @@
-package dk.blekinge.diceroller;
+package dk.blekinge.dicerolla;
 
 import android.content.Intent;
 import android.graphics.Color;

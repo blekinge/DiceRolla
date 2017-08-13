@@ -1,4 +1,4 @@
-package dk.blekinge.diceroller;
+package dk.blekinge.dicerolla;
 
 import org.junit.Test;
 

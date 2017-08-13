@@ -1,4 +1,4 @@
-package dk.blekinge.diceroller;
+package dk.blekinge.dicerolla;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
