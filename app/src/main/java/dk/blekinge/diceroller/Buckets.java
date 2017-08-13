@@ -8,6 +8,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class Buckets extends AppCompatActivity {
 
@@ -27,6 +31,8 @@ public class Buckets extends AppCompatActivity {
 
         rollDice(dicepool);
 
+        log("Rolled "+dicepool+" dice "+Arrays.toString(buckets));
+
         updateReport();
     }
 
@@ -42,8 +48,6 @@ public class Buckets extends AppCompatActivity {
                 selected += buckets[i];
             }
         }
-
-
         report.setText("Dice pool: "+dicepool+", selected dice: "+selected);
     }
 
@@ -89,29 +93,38 @@ public class Buckets extends AppCompatActivity {
     public void reroll(View rerollButton){
         ImageButton[] dices = getDice();
         int rerollPool = 0;
+
+        List<Integer> selected = new ArrayList<>();
         for (int i = 0; i < dices.length; i++) {
             ImageButton dice = dices[i];
             if (dice.isSelected()){
                 rerollPool += buckets[i];
                 buckets[i] = 0;
                 toggleSelect(dice);
+                selected.add(i+1);
             }
         }
         rollDice(rerollPool);
+
+        log("Rerolled "+selected.toString() + "="+rerollPool+" dice: "+Arrays.toString(buckets));
+
     }
 
     public void rollon(View rollonButton){
         ImageButton[] dices = getDice();
         dicepool = 0;
+        List<Integer> selected = new ArrayList<>();
         for (int i = 0; i < dices.length; i++) {
             ImageButton dice = dices[i];
             if (dice.isSelected()){
                 dicepool += buckets[i];
                 toggleSelect(dice);
+                selected.add(i+1);
             }
             buckets[i] = 0;
         }
         rollDice(dicepool);
+        log("Rolled on with "+selected.toString() + "="+dicepool+" dice: "+Arrays.toString(buckets));
 
     }
 
@@ -132,4 +145,10 @@ public class Buckets extends AppCompatActivity {
         }
 
     }
+
+    private void log(String action){
+        TextView log = (TextView) findViewById(R.id.Log);
+        log.append("\n"+action);
+    }
+
 }
