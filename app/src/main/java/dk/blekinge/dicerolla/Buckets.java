@@ -1,19 +1,20 @@
 package dk.blekinge.dicerolla;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class Buckets extends AppCompatActivity {
+public class Buckets extends Activity {
 
     private final int[] buckets = new int[6];
 
@@ -37,7 +38,7 @@ public class Buckets extends AppCompatActivity {
     }
 
     private void updateReport() {
-        TextView report = (TextView) findViewById(R.id.Status);
+        TextView report = findViewById(R.id.Status);
 
         ImageButton[] dices = getDice();
 
@@ -56,33 +57,33 @@ public class Buckets extends AppCompatActivity {
             buckets[roll()]+=1;
         }
 
-        TextView count1 = (TextView) findViewById(R.id.count1);
+        TextView count1 = findViewById(R.id.count1);
         count1.setText(String.format("%d", buckets[0]));
 
-        TextView count2 = (TextView) findViewById(R.id.count2);
+        TextView count2 = findViewById(R.id.count2);
         count2.setText(String.format("%d", buckets[1]));
 
-        TextView count3 = (TextView) findViewById(R.id.count3);
+        TextView count3 = findViewById(R.id.count3);
         count3.setText(String.format("%d", buckets[2]));
 
-        TextView count4 = (TextView) findViewById(R.id.count4);
+        TextView count4 = findViewById(R.id.count4);
         count4.setText(String.format("%d", buckets[3]));
 
-        TextView count5 = (TextView) findViewById(R.id.count5);
+        TextView count5 = findViewById(R.id.count5);
         count5.setText(String.format("%d", buckets[4]));
 
-        TextView count6 = (TextView) findViewById(R.id.count6);
+        TextView count6 = findViewById(R.id.count6);
         count6.setText(String.format("%d", buckets[5]));
     }
 
     private ImageButton[] getDice(){
         return new ImageButton[]{
-                (ImageButton) findViewById(R.id.D1),
-                (ImageButton) findViewById(R.id.D2),
-                (ImageButton) findViewById(R.id.D3),
-                (ImageButton) findViewById(R.id.D4),
-                (ImageButton) findViewById(R.id.D5),
-                (ImageButton) findViewById(R.id.D6)
+                findViewById(R.id.D1),
+                findViewById(R.id.D2),
+                findViewById(R.id.D3),
+                findViewById(R.id.D4),
+                findViewById(R.id.D5),
+                findViewById(R.id.D6)
         };
     }
 
@@ -106,7 +107,7 @@ public class Buckets extends AppCompatActivity {
         }
         rollDice(rerollPool);
 
-        log("Rerolled "+selected.toString() + "="+rerollPool+" dice: "+Arrays.toString(buckets));
+        log("Rerolled "+ selected + "="+rerollPool+" dice: "+Arrays.toString(buckets));
 
     }
 
@@ -124,7 +125,7 @@ public class Buckets extends AppCompatActivity {
             buckets[i] = 0;
         }
         rollDice(dicepool);
-        log("Rolled on with "+selected.toString() + "="+dicepool+" dice: "+Arrays.toString(buckets));
+        log("Rolled on with "+ selected + "="+dicepool+" dice: "+Arrays.toString(buckets));
 
     }
 
@@ -132,8 +133,7 @@ public class Buckets extends AppCompatActivity {
 
 
     public void toggleSelect(View view) {
-        if (view instanceof ImageButton) {
-            ImageButton imageButton = (ImageButton) view;
+        if (view instanceof ImageButton imageButton) {
             if (imageButton.isSelected()){
                 imageButton.setBackgroundColor(Color.WHITE);
                 imageButton.setSelected(false);
@@ -147,7 +147,7 @@ public class Buckets extends AppCompatActivity {
     }
 
     private void log(String action){
-        TextView log = (TextView) findViewById(R.id.Log);
+        TextView log = findViewById(R.id.Log);
         log.append("\n"+action);
     }
 

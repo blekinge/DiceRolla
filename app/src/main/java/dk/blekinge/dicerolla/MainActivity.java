@@ -1,12 +1,12 @@
 package dk.blekinge.dicerolla;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     public static final String DICEPOOL = "dicepool";
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void RollX(View view) {
         Intent intent = new Intent(this, Buckets.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
+        EditText editText = findViewById(R.id.editText);
         int dicePool = Integer.parseInt(editText.getText().toString());
 
         intent.putExtra(DICEPOOL, dicePool);
