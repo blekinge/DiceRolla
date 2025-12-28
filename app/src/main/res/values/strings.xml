@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DiceRoller</string>
     <string name="xD6_button">Roll</string>
+
     <string name="Reroll_button">Reroll selected</string>
     <string name="Rollon_button">Roll on with selected</string>
 </resources>

@@ -3,7 +3,7 @@
 
 ## TODO
 
-* [ ] Refactor to OO design (no int arrays)
+* [X] Refactor to OO design (no int arrays)
 * [ ] Refactor to use Watchers
 * [ ] Wait 1 sec when rolling, use spinner and shaker
 * [ ] 2D6 roll case

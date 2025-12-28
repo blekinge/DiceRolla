@@ -93,7 +93,9 @@
         app:layout_constraintRight_toLeftOf="@+id/D2"
         app:layout_constraintTop_toBottomOf="@+id/Status"
         tools:src="@drawable/d1"
-        tools:srcCompat="@drawable/d1" />
+        tools:srcCompat="@drawable/d1"
+        android:tag="@string/xD6_button"
+        />
 
     <ImageButton
         android:id="@+id/D2"

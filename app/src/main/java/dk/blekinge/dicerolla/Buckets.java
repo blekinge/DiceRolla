@@ -8,15 +8,18 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import kotlin.collections.MapsKt;
 
 
 public class Buckets extends Activity {
 
-    private final int[] buckets = new int[6];
+    private final Map<D6, Integer> buckets = new TreeMap<>();
 
     private int dicepool;
 
@@ -30,9 +33,11 @@ public class Buckets extends Activity {
         Intent intent = getIntent();
         dicepool = intent.getIntExtra(MainActivity.DICEPOOL, 0);
 
+        buckets.putAll(MapsKt.toSortedMap(Map.of(D6.R1, 0, D6.R2, 0, D6.R3, 0, D6.R4, 0, D6.R5, 0, D6.R6,0)));
+
         rollDice(dicepool);
 
-        log("Rolled "+dicepool+" dice "+Arrays.toString(buckets));
+        log("Rolled " + dicepool + " dice " + buckets);
 
         updateReport();
     }
@@ -40,101 +45,85 @@ public class Buckets extends Activity {
     private void updateReport() {
         TextView report = findViewById(R.id.Status);
 
-        ImageButton[] dices = getDice();
-
-        int selected = 0;
-        for (int i = 0; i < dices.length; i++) {
-            ImageButton dice = dices[i];
-            if (dice.isSelected()){
-                selected += buckets[i];
-            }
-        }
-        report.setText("Dice pool: "+dicepool+", selected dice: "+selected);
+        int selected = Arrays.stream(D6.values())
+                .filter(d6 -> findViewById(d6.imageButtonId).isSelected())
+                .mapToInt(d6 -> buckets.getOrDefault(d6, 0))
+                .sum();
+        report.setText("Dice pool: " + dicepool + ", selected dice: " + selected);
     }
 
     private void rollDice(int dicepool) {
         for (int i = 0; i < dicepool; i++) {
-            buckets[roll()]+=1;
+            buckets.merge(roll(), 1, Integer::sum);
         }
 
         TextView count1 = findViewById(R.id.count1);
-        count1.setText(String.format("%d", buckets[0]));
+        count1.setText(String.format("%d", buckets.get(D6.R1)));
 
         TextView count2 = findViewById(R.id.count2);
-        count2.setText(String.format("%d", buckets[1]));
+        count2.setText(String.format("%d", buckets.get(D6.R2)));
 
         TextView count3 = findViewById(R.id.count3);
-        count3.setText(String.format("%d", buckets[2]));
+        count3.setText(String.format("%d", buckets.get(D6.R3)));
 
         TextView count4 = findViewById(R.id.count4);
-        count4.setText(String.format("%d", buckets[3]));
+        count4.setText(String.format("%d", buckets.get(D6.R4)));
 
         TextView count5 = findViewById(R.id.count5);
-        count5.setText(String.format("%d", buckets[4]));
+        count5.setText(String.format("%d", buckets.get(D6.R5)));
 
         TextView count6 = findViewById(R.id.count6);
-        count6.setText(String.format("%d", buckets[5]));
+        count6.setText(String.format("%d", buckets.get(D6.R6)));
     }
 
-    private ImageButton[] getDice(){
-        return new ImageButton[]{
-                findViewById(R.id.D1),
-                findViewById(R.id.D2),
-                findViewById(R.id.D3),
-                findViewById(R.id.D4),
-                findViewById(R.id.D5),
-                findViewById(R.id.D6)
-        };
+    D6 roll() {
+        return D6.values()[(int) (6.0 * Math.random())];
     }
 
-    int roll() {
-        return (int)(6.0 * Math.random());
-    }
+    public void reroll(View rerollButton) {
+        List<D6> selected = new ArrayList<>();
 
-    public void reroll(View rerollButton){
-        ImageButton[] dices = getDice();
-        int rerollPool = 0;
+        int rerollPool = Arrays.stream(D6.values())
+                .map(d6 -> (ImageButton) findViewById(d6.imageButtonId))
+                .filter(View::isSelected)
+                .peek(this::toggleSelect)
+                .map(View::getId)
+                .map(D6::fromImageButtonId)
+                .peek(selected::add)
+                .mapToInt(d6 -> buckets.replace(d6, 0))
+                .sum();
 
-        List<Integer> selected = new ArrayList<>();
-        for (int i = 0; i < dices.length; i++) {
-            ImageButton dice = dices[i];
-            if (dice.isSelected()){
-                rerollPool += buckets[i];
-                buckets[i] = 0;
-                toggleSelect(dice);
-                selected.add(i+1);
-            }
-        }
         rollDice(rerollPool);
 
-        log("Rerolled "+ selected + "="+rerollPool+" dice: "+Arrays.toString(buckets));
+        log("Rerolled " + selected + "=" + rerollPool + " dice: " + buckets);
 
     }
 
-    public void rollon(View rollonButton){
-        ImageButton[] dices = getDice();
-        dicepool = 0;
-        List<Integer> selected = new ArrayList<>();
-        for (int i = 0; i < dices.length; i++) {
-            ImageButton dice = dices[i];
-            if (dice.isSelected()){
-                dicepool += buckets[i];
-                toggleSelect(dice);
-                selected.add(i+1);
-            }
-            buckets[i] = 0;
-        }
+    public void rollon(View rollonButton) {
+        List<D6> selected = new ArrayList<>();
+
+        int dicepool = Arrays.stream(D6.values())
+                .map(d6 -> (ImageButton) findViewById(d6.imageButtonId))
+                .filter(View::isSelected)
+                .peek(this::toggleSelect)
+                .map(View::getId)
+                .map(D6::fromImageButtonId)
+                .peek(selected::add)
+                .mapToInt(d6 -> buckets.getOrDefault(d6, 0))
+                .sum();
+
+        buckets.replaceAll((d6, integer) -> 0);
+
         rollDice(dicepool);
-        log("Rolled on with "+ selected + "="+dicepool+" dice: "+Arrays.toString(buckets));
+
+        log("Rolled on with " + selected + "=" + dicepool + " dice: " + buckets);
 
     }
-
-
 
 
     public void toggleSelect(View view) {
         if (view instanceof ImageButton imageButton) {
-            if (imageButton.isSelected()){
+            if (imageButton.isSelected()) {
                 imageButton.setBackgroundColor(Color.WHITE);
                 imageButton.setSelected(false);
             } else {
@@ -146,9 +135,9 @@ public class Buckets extends Activity {
 
     }
 
-    private void log(String action){
+    private void log(String action) {
         TextView log = findViewById(R.id.Log);
-        log.append("\n"+action);
+        log.append("\n" + action);
     }
 
 }
