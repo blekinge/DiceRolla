@@ -1,5 +1,8 @@
 package dk.blekinge.dicerolla;
 
+import android.app.Activity;
+import android.widget.TextView;
+
 import java.util.Arrays;
 
 public enum D6 implements Comparable<D6>{
