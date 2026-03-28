@@ -39,20 +39,24 @@ import kotlin.collections.MapsKt;
 public class Buckets extends Activity {
 
     private final Map<D6, Integer> buckets = new TreeMap<>();
-
+    private final List<D6> randomDicerolls;
     private int dicepool;
+    private int randomDicerollIndex = 0;
 
-    private Random randomGenerator;
+    public Buckets() {
+        long seed = new Date().getTime();
+        Random randomGenerator = new Random(seed);
+//        log("Random seed: " + seed);
+        randomDicerolls = randomGenerator.ints(10_000, 0, D6.values().length)
+                .mapToObj(i -> D6.values()[i])
+                .collect(Collectors.toList());
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buckets);
-
-        long seed = new Date().getTime();
-        randomGenerator = new Random(seed);
-        log("Random seed: " + seed);
 
 
         //Get the intent that started this activity and extract the message string
@@ -104,28 +108,6 @@ public class Buckets extends Activity {
         updateReport();
     }
 
-    private void swiped(Map<Integer, Boolean> switched, ImageButton imageButton) {
-        if (imageButton != null && Objects.equals(Boolean.FALSE, switched.get(imageButton.getId()))) {
-            toggleSelect(imageButton);
-            switched.replace(imageButton.getId(), true);
-        }
-    }
-
-    @Nullable
-    private ImageButton getTouchedButton(ViewGroup bucketsView, int x, int y) {
-        var bounds = new Rect(0, 0, 0, 0);
-        return Arrays.stream(D6.values())
-                .map(this::imageButton)
-                .filter(imageButton -> {
-                    imageButton.getBackground().copyBounds(bounds);
-                    bucketsView.offsetDescendantRectToMyCoords(imageButton, bounds);
-                    return bounds.contains(x, y);
-                })
-                .findFirst()
-                .orElse(null);
-    }
-
-
     public void reroll(View rerollButton) {
         List<D6> selected = new ArrayList<>();
 
@@ -157,7 +139,45 @@ public class Buckets extends Activity {
 
         resetDicerollsToZero();
 
+        dicepool = selectedDicepool;
         rollDice(selectedDicepool, getString(R.string.rolled_on_message, selected, selectedDicepool));
+    }
+
+    public void toggleSelect(View view) {
+        if (view instanceof ImageButton imageButton) {
+            if (imageButton.isSelected()) {
+                imageButton.setBackgroundColor(Color.WHITE);
+                imageButton.setSelected(false);
+            } else {
+                imageButton.setBackgroundColor(Color.BLUE);
+                imageButton.setSelected(true);
+            }
+            updateReport();
+        }
+
+    }
+
+
+
+    private void swiped(Map<Integer, Boolean> switched, ImageButton imageButton) {
+        if (imageButton != null && Objects.equals(Boolean.FALSE, switched.get(imageButton.getId()))) {
+            toggleSelect(imageButton);
+            switched.replace(imageButton.getId(), true);
+        }
+    }
+
+    @Nullable
+    private ImageButton getTouchedButton(ViewGroup bucketsView, int x, int y) {
+        var bounds = new Rect(0, 0, 0, 0);
+        return Arrays.stream(D6.values())
+                .map(this::imageButton)
+                .filter(imageButton -> {
+                    imageButton.getBackground().copyBounds(bounds);
+                    bucketsView.offsetDescendantRectToMyCoords(imageButton, bounds);
+                    return bounds.contains(x, y);
+                })
+                .findFirst()
+                .orElse(null);
     }
 
     private void resetDicerollsToZero() {
@@ -186,7 +206,7 @@ public class Buckets extends Activity {
                 .peek(d6 -> rolls.computeIfAbsent(d6, i -> 0))
                 .forEach(d6 -> label(d6).setText(formatD6Roll(rolls.get(d6), buckets.get(d6))));
 
-
+        updateReport();
         // Set a delayed task to wait for 2 seconds before proceeding
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // Continue with further actions after waiting
@@ -204,10 +224,8 @@ public class Buckets extends Activity {
 
     @NonNull
     private Stream<D6> roll(int dicepool) {
-        return randomGenerator.ints(dicepool, 0, D6.values().length)
-                .mapToObj(i -> D6.values()[i]);
+        return randomDicerolls.subList(randomDicerollIndex, randomDicerollIndex+=dicepool).stream();
     }
-
 
     private void updateReport() {
         TextView report = findViewById(R.id.Status);
@@ -229,20 +247,6 @@ public class Buckets extends Activity {
 
     private TextView label(D6 d6) {
         return findViewById(d6.labelId);
-    }
-
-    public void toggleSelect(View view) {
-        if (view instanceof ImageButton imageButton) {
-            if (imageButton.isSelected()) {
-                imageButton.setBackgroundColor(Color.WHITE);
-                imageButton.setSelected(false);
-            } else {
-                imageButton.setBackgroundColor(Color.BLUE);
-                imageButton.setSelected(true);
-            }
-            updateReport();
-        }
-
     }
 
     private void log(String action) {
