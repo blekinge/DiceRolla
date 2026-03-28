@@ -9,6 +9,7 @@ import android.widget.EditText;
 public class MainActivity extends Activity {
 
     public static final String DICEPOOL = "dicepool";
+    public static final String RANDOM_DICEROLL_INDEX = "randomDicerollIndex";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,14 +17,16 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
     }
 
-
     public void RollX(View view) {
-        Intent intent = new Intent(this, Buckets.class);
+        Intent buckets = new Intent(this, Buckets.class);
+
         EditText editText = findViewById(R.id.editText);
         int dicePool = Integer.parseInt(editText.getText().toString());
 
-        intent.putExtra(DICEPOOL, dicePool);
-        startActivity(intent);
+        buckets.putExtra(DICEPOOL, dicePool);
+        buckets.putExtra(RANDOM_DICEROLL_INDEX, D6.getRandomOffset());
+
+        startActivity(buckets);
 
     }
 }

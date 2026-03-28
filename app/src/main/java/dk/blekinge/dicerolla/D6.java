@@ -3,9 +3,14 @@ package dk.blekinge.dicerolla;
 import android.app.Activity;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
-public enum D6 implements Comparable<D6>{
+public enum D6 implements Comparable<D6>, Serializable {
 
     R1(R.id.D1, R.id.count1),
 
@@ -21,6 +26,18 @@ public enum D6 implements Comparable<D6>{
 
     final int imageButtonId;
     final int labelId;
+
+
+    static final Random random = new Random(new Date().getTime());
+    static final List<D6> randomDicerolls= random
+                .ints(10_000, 0, D6.values().length)
+                .mapToObj(i -> D6.values()[i])
+                .collect(Collectors.toCollection(() -> new CircularList<>()));
+
+
+    static int getRandomOffset(){
+        return random.nextInt(randomDicerolls.size());
+    }
 
     D6(int imageButtonId, int labelId) {
         this.imageButtonId = imageButtonId;
