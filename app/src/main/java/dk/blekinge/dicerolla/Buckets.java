@@ -1,23 +1,31 @@
 package dk.blekinge.dicerolla;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
@@ -36,7 +44,7 @@ public class Buckets extends Activity {
 
     private Random randomGenerator;
 
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,24 +52,77 @@ public class Buckets extends Activity {
 
         long seed = new Date().getTime();
         randomGenerator = new Random(seed);
-        log("Random seed: "+seed);
+        log("Random seed: " + seed);
 
 
         //Get the intent that started this activity and extract the message string
         Intent intent = getIntent();
         dicepool = intent.getIntExtra(MainActivity.DICEPOOL, 0);
 
-        buckets.putAll(MapsKt.toSortedMap(Map.of(D6.R1, 0,
-                D6.R2, 0,
-                D6.R3, 0,
-                D6.R4, 0,
-                D6.R5, 0,
-                D6.R6, 0)));
+        buckets.putAll(MapsKt.toSortedMap(
+                Map.of(
+                        D6.R1, 0,
+                        D6.R2, 0,
+                        D6.R3, 0,
+                        D6.R4, 0,
+                        D6.R5, 0,
+                        D6.R6, 0)));
+
+
+        var switched = Collections.synchronizedMap(new HashMap<>(Map.of(
+                D6.R1.imageButtonId, false,
+                D6.R2.imageButtonId, false,
+                D6.R3.imageButtonId, false,
+                D6.R4.imageButtonId, false,
+                D6.R5.imageButtonId, false,
+                D6.R6.imageButtonId, false)));
+
+        ViewGroup diceView = findViewById(R.id.Dice);
+        diceView.setOnTouchListener((v, event) -> {
+            int x = (int) (event.getX());
+            int y = (int) (event.getY());
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                switched.replaceAll((imageButton, aBoolean) -> false);
+
+            }
+
+            ImageButton touchedButton = getTouchedButton(diceView, x, y);
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                swiped(switched, touchedButton);
+            }
+
+            if (touchedButton != null && event.getAction() == MotionEvent.ACTION_MOVE) {
+                swiped(switched, touchedButton);
+            }
+            return true;
+        });
 
 
         rollDice(dicepool, "Rolled " + dicepool + " dice BUCKETS");
 
         updateReport();
+    }
+
+    private void swiped(Map<Integer, Boolean> switched, ImageButton imageButton) {
+        if (imageButton != null && Objects.equals(Boolean.FALSE, switched.get(imageButton.getId()))) {
+            toggleSelect(imageButton);
+            switched.replace(imageButton.getId(), true);
+        }
+    }
+
+    @Nullable
+    private ImageButton getTouchedButton(ViewGroup bucketsView, int x, int y) {
+        var bounds = new Rect(0, 0, 0, 0);
+        return Arrays.stream(D6.values())
+                .map(this::imageButton)
+                .filter(imageButton -> {
+                    imageButton.getBackground().copyBounds(bounds);
+                    bucketsView.offsetDescendantRectToMyCoords(imageButton, bounds);
+                    return bounds.contains(x, y);
+                })
+                .findFirst()
+                .orElse(null);
     }
 
 
@@ -122,7 +183,7 @@ public class Buckets extends Activity {
                 .collect(Collectors.toMap(Function.identity(), x -> 1, Integer::sum));
 
         Arrays.stream(D6.values())
-                .peek(d6 -> rolls.computeIfAbsent(d6, i ->0 ))
+                .peek(d6 -> rolls.computeIfAbsent(d6, i -> 0))
                 .forEach(d6 -> label(d6).setText(formatD6Roll(rolls.get(d6), buckets.get(d6))));
 
 

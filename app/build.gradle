@@ -30,11 +30,19 @@ android {
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.3.0"))
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+
+    // Source: https://mvnrepository.com/artifact/androidx.annotation/annotation-jvm
+    implementation 'androidx.annotation:annotation-jvm:1.9.1'
+
+    // Source: https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+
+    // Source: https://mvnrepository.com/artifact/androidx.test.espresso/espresso-core
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+
     testImplementation 'junit:junit:4.13.2'
 
 }

@@ -8,6 +8,7 @@
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="81dp">
 
+
     <TextView
         android:id="@+id/Status"
         android:layout_width="wrap_content"
@@ -19,204 +20,224 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="16dp" />
 
-    <ImageButton
-        android:id="@+id/D1"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="1"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d1"
-        android:tag="@string/xD6_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/D2"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d1"
-        tools:srcCompat="@drawable/d1" />
 
-
-    <TextView
-        android:id="@+id/count1"
-        android:layout_width="45dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/Dice"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 1 rolled"
-        android:labelFor="@+id/D1"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/count2"
-        app:layout_constraintTop_toBottomOf="@+id/D1" />
+        app:layout_constraintTop_toBottomOf="@+id/Status">
 
-    <ImageButton
-        android:id="@+id/D2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="2"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d2"
-        app:layout_constraintLeft_toRightOf="@+id/D1"
-        app:layout_constraintRight_toLeftOf="@+id/D3"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d2"
-        tools:srcCompat="@drawable/d2" />
 
-    <TextView
-        android:id="@+id/count2"
-        android:layout_width="45dp"
+        <ImageButton
+            android:id="@+id/D1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d1"
+            android:tag="@string/xD6_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/D2"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d1"
+            tools:srcCompat="@drawable/d1" />
+
+
+        <ImageButton
+            android:id="@+id/D2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="2"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d2"
+            app:layout_constraintLeft_toRightOf="@+id/D1"
+            app:layout_constraintRight_toLeftOf="@+id/D3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d2"
+            tools:srcCompat="@drawable/d2" />
+
+        <ImageButton
+            android:id="@+id/D3"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="3"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d3"
+            app:layout_constraintLeft_toRightOf="@+id/D2"
+            app:layout_constraintRight_toLeftOf="@+id/D4"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d3"
+            tools:srcCompat="@drawable/d3" />
+
+
+        <ImageButton
+            android:id="@+id/D4"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="4"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d4"
+            app:layout_constraintLeft_toRightOf="@+id/D3"
+            app:layout_constraintRight_toLeftOf="@+id/D5"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d4"
+            tools:srcCompat="@drawable/d4" />
+
+
+        <ImageButton
+            android:id="@+id/D5"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="5"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d5"
+            app:layout_constraintLeft_toRightOf="@+id/D4"
+            app:layout_constraintRight_toLeftOf="@+id/D6"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d5"
+            tools:srcCompat="@drawable/d5" />
+
+
+        <ImageButton
+            android:id="@+id/D6"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:contentDescription="6"
+            android:scaleType="centerCrop"
+            android:src="@drawable/d6"
+            app:layout_constraintLeft_toRightOf="@+id/D5"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/d6"
+            tools:srcCompat="@drawable/d6" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/Buckets"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 2 rolled"
-        android:labelFor="@+id/D2"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toRightOf="@+id/count1"
-        app:layout_constraintRight_toLeftOf="@+id/count3"
-        app:layout_constraintTop_toBottomOf="@+id/D2" />
+        app:layout_constraintTop_toBottomOf="@+id/Dice">
 
-    <ImageButton
-        android:id="@+id/D3"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="3"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d3"
-        app:layout_constraintLeft_toRightOf="@+id/D2"
-        app:layout_constraintRight_toLeftOf="@+id/D4"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d3"
-        tools:srcCompat="@drawable/d3" />
+        <TextView
+            android:id="@+id/count1"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 1 rolled"
+            android:labelFor="@+id/D1"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/count2"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/count3"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 3 rolled"
-        android:labelFor="@+id/D3"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toRightOf="@+id/count2"
-        app:layout_constraintRight_toLeftOf="@+id/count4"
-        app:layout_constraintTop_toBottomOf="@+id/D3" />
+        <TextView
+            android:id="@+id/count2"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 2 rolled"
+            android:labelFor="@+id/D2"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toRightOf="@+id/count1"
+            app:layout_constraintRight_toLeftOf="@+id/count3"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/D4"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="4"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d4"
-        app:layout_constraintLeft_toRightOf="@+id/D3"
-        app:layout_constraintRight_toLeftOf="@+id/D5"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d4"
-        tools:srcCompat="@drawable/d4" />
+        <TextView
+            android:id="@+id/count3"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 3 rolled"
+            android:labelFor="@+id/D3"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toRightOf="@+id/count2"
+            app:layout_constraintRight_toLeftOf="@+id/count4"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/count4"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 4 rolled"
-        android:labelFor="@+id/D4"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toRightOf="@+id/count3"
-        app:layout_constraintRight_toLeftOf="@+id/count5"
-        app:layout_constraintTop_toBottomOf="@+id/D4" />
+        <TextView
+            android:id="@+id/count4"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 4 rolled"
+            android:labelFor="@+id/D4"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toRightOf="@+id/count3"
+            app:layout_constraintRight_toLeftOf="@+id/count5"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/D5"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="5"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d5"
-        app:layout_constraintLeft_toRightOf="@+id/D4"
-        app:layout_constraintRight_toLeftOf="@+id/D6"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d5"
-        tools:srcCompat="@drawable/d5" />
 
-    <TextView
-        android:id="@+id/count5"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 5 rolled"
-        android:labelFor="@+id/D5"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toRightOf="@+id/count4"
-        app:layout_constraintRight_toLeftOf="@+id/count6"
-        app:layout_constraintTop_toBottomOf="@+id/D5" />
+        <TextView
+            android:id="@+id/count5"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 5 rolled"
+            android:labelFor="@+id/D5"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toRightOf="@+id/count4"
+            app:layout_constraintRight_toLeftOf="@+id/count6"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/D6"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="6"
-        android:onClick="toggleSelect"
-        android:scaleType="centerCrop"
-        android:src="@drawable/d6"
-        app:layout_constraintLeft_toRightOf="@+id/D5"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        tools:src="@drawable/d6"
-        tools:srcCompat="@drawable/d6" />
 
-    <TextView
-        android:id="@+id/count6"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Number of dice with value 6 rolled"
-        android:labelFor="@+id/D6"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toRightOf="@+id/count5"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/D6" />
+        <TextView
+            android:id="@+id/count6"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Number of dice with value 6 rolled"
+            android:labelFor="@+id/D6"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintLeft_toRightOf="@+id/count5"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/Reroll_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:enabled="false"
         android:onClick="reroll"
         android:text="@string/Reroll_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/count3"
-        android:enabled="false"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/Buckets" />
 
     <Button
         android:id="@+id/Rollon_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:enabled="false"
         android:onClick="rollon"
         android:text="@string/Rollon_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Reroll_button"
-        android:enabled="false"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/Reroll_button" />
 
 
     <TextView
