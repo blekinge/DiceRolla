@@ -4,9 +4,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
 
@@ -38,7 +41,7 @@ public class MainActivityTest {
     @Test
     public void ensureFirstPageIsVisible() throws Exception {
 
-        Matcher<View> viewMatcher = ViewMatchers.withText("D6");
+        Matcher<View> viewMatcher = withText("D6");
         ViewInteraction viewInteraction = onView(viewMatcher);
         Matcher<View> displayed = isDisplayed();
         ViewAssertion matches = matches(displayed);
@@ -51,30 +54,33 @@ public class MainActivityTest {
         onView(withId(R.id.editText)).perform(typeText("33"));
         onView(withId(R.id.button)).perform(click());
 
-        onView(ViewMatchers.withContentDescription("buckets")).check(matches(isDisplayed()));
+        onView(withContentDescription("buckets")).check(matches(isDisplayed()));
         onView(withId(R.id.Buckets)).check(matches(isDisplayed()));
-        onView(withId(R.id.Status)).check(matches(ViewMatchers.withText("Dice pool: 33, selected dice: 0")));
+        onView(withId(R.id.Status)).check(matches(withText("Dice pool: 33, selected dice: 0")));
     }
 
 
     @Test
     public void rerollTest() throws Exception {
 
-        onView(withId(R.id.editText)).perform(typeText("33"));
-        onView(withId(R.id.button)).perform(click());
-
-        onView(ViewMatchers.withContentDescription("buckets")).check(matches(isDisplayed()));
-        onView(withId(R.id.Buckets)).check(matches(isDisplayed()));
-        onView(withId(R.id.Status)).check(matches(ViewMatchers.withText("Dice pool: 33, selected dice: 0")));
-
-        onView(withId(D6.R1.imageButtonId)).perform(ViewActions.click());
-        Thread.sleep(1000);
-
-        onView(withId(R.id.Reroll_button))
-                .check(matches(ViewMatchers.isClickable()))
+        onView(withId(R.id.editText))
+                .perform(typeText("33"));
+        onView(withId(R.id.button))
                 .perform(click());
 
-        Thread.sleep(10000);
+        onView(withContentDescription("buckets"))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.Buckets))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.Status))
+                .check(matches(withText("Dice pool: 33, selected dice: 0")));
+
+        onView(withId(D6.R1.imageButtonId))
+                .perform(click());
+        onView(withId(R.id.Reroll_button))
+                .check(matches(isClickable()))
+                .perform(click());
+
     }
 
 }

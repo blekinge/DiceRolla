@@ -30,7 +30,7 @@ public enum D6 implements Comparable<D6>, Serializable {
 
     static final Random random = new Random(new Date().getTime());
     static final List<D6> randomDicerolls= random
-                .ints(10_000, 0, D6.values().length)
+                .ints(10, 0, D6.values().length)
                 .mapToObj(i -> D6.values()[i])
                 .collect(Collectors.toCollection(() -> new CircularList<>()));
 
