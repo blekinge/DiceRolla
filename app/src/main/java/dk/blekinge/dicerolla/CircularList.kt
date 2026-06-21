@@ -1,22 +1,26 @@
-package dk.blekinge.dicerolla;
+package dk.blekinge.dicerolla
 
-import androidx.annotation.NonNull;
+import kotlin.collections.ArrayList
 
-import java.util.ArrayList;
-import java.util.List;
+class CircularList<Type> : ArrayList<Type> {
 
-public class CircularList<Type> extends ArrayList<Type> {
-    public Type get(int index) {
+    constructor(c: Collection<Type?>) : super(c)
+    constructor() : super()
+
+    override fun get(index: Int): Type {
         if (this.isEmpty()) {
-            throw new IndexOutOfBoundsException("List is empty");
+            throw IndexOutOfBoundsException("List is empty")
         }
-        return super.get(index % this.size());
+        return super.get(index % this.size)
     }
 
-    @NonNull
-    @Override
-    public List<Type> subList(int fromIndex, int toIndex) {
-        return StreamU
-        return super.subList(fromIndex, toIndex);
+    override fun subList(fromIndex: Int, toIndex: Int): MutableList<Type> {
+        return if (fromIndex >= size) {
+            subList(fromIndex - size, toIndex - size)
+        } else if (toIndex > size) {
+            super.subList(fromIndex, size).plus(subList(0, toIndex - size)).toMutableList()
+        } else {
+            super.subList(fromIndex, toIndex)
+        }
     }
 }
