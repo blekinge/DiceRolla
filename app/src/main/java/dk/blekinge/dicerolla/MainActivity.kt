@@ -1,28 +1,25 @@
-package dk.blekinge.dicerolla;
+package dk.blekinge.dicerolla
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
 
-public class MainActivity extends Activity {
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+class MainActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
     }
-    
-    public void RollX(View view) {
-        Intent buckets = new Intent(this, Buckets.class);
-        
-        EditText editText = findViewById(R.id.editText);
-        int dicePool = Integer.parseInt(editText.getText().toString());
-        
-        buckets.putExtra("buckets", new BucketPojo(dicePool, D6.getRandomOffset()));
-        
-        startActivity(buckets);
-        
+
+    fun RollX(view: View?) {
+        val buckets = Intent(this, Buckets::class.java)
+
+        val editText = findViewById<EditText>(R.id.editText)
+        val dicePool = editText.getText().toString().toInt()
+
+        buckets.putExtra("buckets", Bucket(dicePool, D6.randomOffset))
+
+        startActivity(buckets)
     }
 }

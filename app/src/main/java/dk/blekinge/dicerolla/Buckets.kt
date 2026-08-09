@@ -13,102 +13,85 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import java.io.Serializable
-import java.lang.Boolean
 import java.util.Collections
 import java.util.Locale
-import java.util.Map
-import java.util.SortedMap
 import java.util.TreeMap
-import kotlin.Int
-import kotlin.String
-import kotlin.let
 
-private class BucketPojo : Serializable {
-    val dice: SortedMap<D6, Int>;
-    val dicepool: Int;
-    var randomDicerollIndex: Int;
-
-    constructor(dice: SortedMap<D6, Int>, dicepool: Int, randomDicerollIndex: Int) {
-        this.dice = dice
-        this.dicepool = dicepool
-        this.randomDicerollIndex = randomDicerollIndex
-    }
-
-    constructor(dicepool: Int, randomDicerollIndex: Int) : this(
-        dice = sortedMapOf(
-            Pair(D6.R1, 0),
-            Pair(D6.R2, 0),
-            Pair(D6.R3, 0),
-            Pair(D6.R4, 0),
-            Pair(D6.R5, 0),
-            Pair(D6.R6, 0)
-        ),
-        dicepool = dicepool,
-        randomDicerollIndex = randomDicerollIndex
-    ) {
-    }
-
-    constructor() : this(
-        dicepool = 0,
-        randomDicerollIndex = 0
-    ) {
-    }
-}
 
 class Buckets : Activity() {
-    private lateinit var bucket: BucketPojo
+    private lateinit var bucket: Bucket
 
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buckets)
 
-        //Get the intent that started this activity and extract the message string
-        val intent = getIntent()
+        //Retrieve the Dicebucket from the state or create a new
+        bucket = getIntent().getSerializableExtra(BUCKETS, Bucket::class.java) ?: Bucket()
 
-        bucket = intent.getSerializableExtra(BUCKETS, BucketPojo::class.java) ?: BucketPojo()
+        handleTouchInteraction()
 
+        rollDice()
 
-        val switched = Collections.synchronizedMap<Int?, kotlin.Boolean?>(
-            HashMap<Int?, kotlin.Boolean?>(
-                Map.of<Int?, kotlin.Boolean?>(
-                    D6.R1.imageButtonId, false,
-                    D6.R2.imageButtonId, false,
-                    D6.R3.imageButtonId, false,
-                    D6.R4.imageButtonId, false,
-                    D6.R5.imageButtonId, false,
-                    D6.R6.imageButtonId, false
-                )
-            )
-        )
+        updateReport()
+    }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun handleTouchInteraction() {
+        //A synchronized map switched is created to track the state of each die button (ID: D1-D6). It stores whether a button has been "swiped" or not.
+        val switched = Collections.synchronizedMap(
+            D6.entries.asSequence().associate { Pair(it.imageButtonId, false) })
+
+        //diceView refers to the container (ConstraintLayout) holding the dice buttons (D1-D6).
         val diceView = findViewById<ViewGroup>(R.id.Dice)
+
+        fun swiped(switched: MutableMap<Int?, kotlin.Boolean?>, imageButton: ImageButton?) {
+            if ((imageButton != null) && (switched[imageButton.id] == false)) {
+                imageButton.toggleSelect()
+                switched.replace(imageButton.id, true)
+            }
+        }
+
+        fun getTouchedButton(bucketsView: ViewGroup, x: Int, y: Int): ImageButton? {
+            val bounds = Rect(0, 0, 0, 0)
+            return D6.entries.stream()
+                .toList()
+                .asSequence()
+                .mapNotNull { it.imageButton() }
+                .firstOrNull {
+                    it.background.copyBounds(bounds)
+                    bucketsView.offsetDescendantRectToMyCoords(it, bounds)
+                    bounds.contains(x, y)
+                }
+        }
+
+        //A setOnTouchListener is set on diceView to handle touch events:
+        //ACTION_DOWN: Resets all buttons in switched to false.
+        //ACTION_UP or ACTION_MOVE: Calls swiped() to toggle the selection state of the touched button.
+        //The listener returns true, indicating the event was handled.
         diceView.setOnTouchListener { _: View?, event: MotionEvent? ->
             val x = (event!!.x).toInt()
             val y = (event.y).toInt()
 
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                switched.replaceAll { _: Int?, _: kotlin.Boolean? -> false }
-            }
-
             val touchedButton = getTouchedButton(diceView, x, y)
-            if (event.action == MotionEvent.ACTION_UP) {
-                swiped(switched, touchedButton)
-            }
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    switched.replaceAll { _: Int?, _: kotlin.Boolean? -> false }
+                }
 
-            if (touchedButton != null && event.action == MotionEvent.ACTION_MOVE) {
-                swiped(switched, touchedButton)
+                MotionEvent.ACTION_UP -> {
+                    swiped(switched, touchedButton)
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    touchedButton?.let { swiped(switched, it) }
+                }
             }
             true
         }
 
-
-        rollDice(bucket.dicepool, "Rolled " + bucket?.dicepool + " dice BUCKETS")
-
-        updateReport()
     }
+
 
     fun reroll(rerollButton: View?) {
         val rerollIntent = Intent(this, Buckets::class.java)
@@ -118,16 +101,15 @@ class Buckets : Activity() {
             D6.entries.stream()
                 .toList()
                 .asSequence()
-                .mapNotNull { d6: D6 -> this.imageButton(d6) }
-                .filter { obj -> obj.isSelected }
-                .onEach { view -> this.toggleSelect(view) }
-                .map { D6.fromImageButtonId(it.id) }
-                .map { d6: D6 -> newBuckets.replace(d6, 0) ?: 0 }
-                .sum()
+                .mapNotNull { it.imageButton() }
+                .filter { it.isSelected }
+                .onEach { it.toggleSelect() }
+                .mapNotNull { it.d6() }
+                .sumOf { d6: D6 -> newBuckets.replace(d6, 0) ?: 0 }
 
         rerollIntent.putExtra(
             BUCKETS,
-            BucketPojo(newBuckets, selectedRerollPool, bucket.randomDicerollIndex)
+            Bucket(newBuckets, selectedRerollPool, bucket.randomDicerollIndex)
         )
         startActivity(rerollIntent)
     }
@@ -135,18 +117,18 @@ class Buckets : Activity() {
     fun rollon(rollonButton: View?) {
         val rollOnIntent = Intent(this, Buckets::class.java)
 
-        val selectedDicepool = D6.entries.stream().toList()
+        val selectedDicepool = D6.entries
             .asSequence()
-            .mapNotNull { this.imageButton(it) }
+            .mapNotNull { it.imageButton() }
             .filter { it.isSelected }
-            .onEach { this.toggleSelect(it) }
-            .map { D6.fromImageButtonId(it.id) }
-            .map { bucket.dice[it] ?: 0 }
+            .onEach { it.toggleSelect() }
+            .mapNotNull { it.d6() }
+            .map { bucket.diceCount(it) }
             .sum()
 
         rollOnIntent.putExtra(
             BUCKETS,
-            BucketPojo(
+            Bucket(
                 dicepool = selectedDicepool,
                 randomDicerollIndex = bucket.randomDicerollIndex
             )
@@ -155,38 +137,19 @@ class Buckets : Activity() {
         startActivity(rollOnIntent)
     }
 
-    fun toggleSelect(view: View?) {
-        if (view is ImageButton) {
-            if (view.isSelected) {
-                view.setBackgroundColor(Color.WHITE)
-                view.setSelected(false)
-            } else {
-                view.setBackgroundColor(Color.BLUE)
-                view.setSelected(true)
-            }
-            updateReport()
+
+    //-------------- Utility methods ----------
+
+
+    fun ImageButton.toggleSelect() {
+        if (this.isSelected) {
+            this.setBackgroundColor(Color.WHITE)
+            this.setSelected(false)
+        } else {
+            this.setBackgroundColor(Color.BLUE)
+            this.setSelected(true)
         }
-    }
-
-
-    private fun swiped(switched: MutableMap<Int?, kotlin.Boolean?>, imageButton: ImageButton?) {
-        if ((imageButton != null) && (Boolean.FALSE == switched[imageButton.id])) {
-            toggleSelect(imageButton)
-            switched.replace(imageButton.id, true)
-        }
-    }
-
-    private fun getTouchedButton(bucketsView: ViewGroup, x: Int, y: Int): ImageButton? {
-        val bounds = Rect(0, 0, 0, 0)
-        return D6.entries.stream()
-            .toList()
-            .asSequence()
-            .mapNotNull { this.imageButton(it) }
-            .firstOrNull {
-                it.background.copyBounds(bounds)
-                bucketsView.offsetDescendantRectToMyCoords(it, bounds)
-                bounds.contains(x, y)
-            }
+        updateReport()
     }
 
     private fun formatD6(value: Int): String {
@@ -200,74 +163,78 @@ class Buckets : Activity() {
         )
     }
 
-    private fun formatD6Roll(addition: Int, value: Int): String {
+    private fun formatD6Roll(addition: Int?, value: Int?): String {
         return String.format(
             locale = Locale.getDefault(),
             format = "%s\n%s",
             when {
-                addition == 0 -> " "
+                (addition ?: 0) == 0 -> " "
                 else -> ("+$addition")
             },
             when {
-                value == 0 -> "-"
+                (value ?: 0) == 0 -> "-"
                 else -> value
             }
         )
     }
 
-    private fun rollDice(dicepool: Int, message: String) {
-        val rolls = roll(dicepool)
-            .groupingBy { it }
-            .fold(0, { acc, e -> acc + 1 })
+    private fun rollDice() {
 
+        val message = "Rolled ${bucket.dicePoolSize} dice ${bucket.dice}"
 
-        D6.entries.toList()
-            .onEach { d6: D6 ->
-                label(d6)?.text = formatD6Roll(
-                    addition = rolls[d6] ?: 0, value = bucket.dice[d6] ?: 0
-                )
+        val rolls = bucket.rollDice()
+
+        rolls.asSequence()
+            .onEach { (d6, count) ->
+                d6.label()?.let {
+                    it.text = formatD6Roll(
+                        addition = count,
+                        value = bucket.dice.getValue(d6)
+                    )
+                }
             }
-            .forEach { d6: D6 ->
-                bucket.dice.merge(d6, rolls[d6] ?: 0) { a, b -> a + b }
+            .forEach { (d6, count) ->
+                bucket.dice.merge(d6, count, Integer::sum)
             }
 
         updateReport()
         // Set a delayed task to wait for 2 seconds before proceeding
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
-            // Continue with further actions after waiting
-            D6.entries.toList()
-                .forEach { d6: D6 -> label(d6)?.text = formatD6(bucket.dice[d6]!!) }
-            log(message.replace("BUCKETS".toRegex(), bucket.dice.toString()))
-        }, 2000) // 2000 milliseconds = 2 seconds
-    }
+        Handler(Looper.getMainLooper())
+            .postDelayed({
+                // Continue with further actions after waiting
+                D6.sequence()
+                    .forEach { it.label()?.text = formatD6(bucket.dice[it]!!) }
 
-    private fun roll(dicepool: Int): List<D6> {
-        return D6.randomDicerolls.subList(
-            bucket.randomDicerollIndex,
-            dicepool.let { bucket.randomDicerollIndex += it; bucket.randomDicerollIndex })
+                log(message)
 
+            }, 2000) // 2000 milliseconds = 2 seconds
     }
 
     private fun updateReport() {
         val report = findViewById<TextView>(R.id.Status)
 
-        val selected = D6.entries.toList()
-            .filter { d6: D6 -> imageButton(d6)?.isSelected ?: false }
-            .map { d6: D6 -> bucket.dice[d6] ?: 0 }
-            .sum()
+        val selected = D6.entries.asSequence()
+            .filter { d6: D6 -> d6.imageButton()?.isSelected ?: false }
+            .sumOf { d6: D6 -> bucket.diceCount(d6) }
 
         findViewById<View>(R.id.Reroll_button).setEnabled(selected > 0)
         findViewById<View>(R.id.Rollon_button).setEnabled(selected > 0)
 
-        report.text = getString(R.string.dice_pool, bucket.dicepool, selected)
+        report.text = getString(R.string.dice_pool, bucket.dice.asSequence().sumOf { it.value }, selected)
     }
 
-    private fun imageButton(d6: D6): ImageButton? {
-        return findViewById(d6.imageButtonId)
+    private fun Bucket.diceCount(d6: D6): Int = this.dice.getOrDefault(d6, 0)
+
+    private fun D6.imageButton(): ImageButton? {
+        return findViewById(this.imageButtonId)
     }
 
-    private fun label(d6: D6): TextView? {
-        return findViewById(d6.labelId)
+    private fun ImageButton.d6(): D6? {
+        return D6.entries.firstOrNull { d6 -> this.id == d6.imageButtonId }
+    }
+
+    private fun D6.label(): TextView? {
+        return findViewById(this.labelId)
     }
 
     private infix fun log(action: String?) {
@@ -276,6 +243,7 @@ class Buckets : Activity() {
             append(action)
         }
     }
+
 
     companion object {
         const val BUCKETS: String = "buckets"
