@@ -2,8 +2,14 @@ package dk.blekinge.dicerolla
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+
 
 class DiceViewModel : ViewModel() {
+
     private val _dicePool = mutableStateOf(0)
     var dicePool: Int
         get() = _dicePool.value
@@ -11,15 +17,15 @@ class DiceViewModel : ViewModel() {
             _dicePool.value = value
         }
 
-    private val _bucket = mutableStateOf<Bucket?>(null)
-    val bucket
-        get() = _bucket
+    private val _bucket = MutableStateFlow<Bucket?>(null)
+    val bucket: StateFlow<Bucket?>
+        get() = _bucket.asStateFlow()
 
     fun rollBucket(initialBucket: Bucket) {
-        _bucket.value = Bucket.roll(initialBucket)
+        _bucket.update { Bucket.roll(initialBucket) }
     }
 
     fun reset() {
-        _bucket.value = null
+        _bucket.update({ null })
     }
 }

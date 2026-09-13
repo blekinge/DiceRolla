@@ -1,10 +1,8 @@
 // Bucket.kt
 package dk.blekinge.dicerolla
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.SortedMap
 
 @Serializable
 data class Bucket(
@@ -13,11 +11,8 @@ data class Bucket(
     var randomDicerollIndex: Int
 ) : java.io.Serializable {
 
-    // Convert to Compose-friendly state (if needed)
-    fun toState(): MutableState<Bucket> = mutableStateOf(this)
-
     companion object {
-        fun create(dicepool: Int = 0, randomDicerollIndex: Int = 0): Bucket {
+        fun create(dicepool: Int = 0, randomDicerollIndex: Int = D6.randomOffset): Bucket {
             return Bucket(
                 dice = sortedMapOf(
                     D6.R1 to 0,
