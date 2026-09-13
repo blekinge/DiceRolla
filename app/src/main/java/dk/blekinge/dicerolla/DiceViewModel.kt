@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 
 class DiceViewModel : ViewModel() {
 
-    private val _dicePool = mutableStateOf(0)
+    private val _dicePool = mutableStateOf(5)
     var dicePool: Int
         get() = _dicePool.value
         set(value) {
