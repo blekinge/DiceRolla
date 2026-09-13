@@ -1,52 +1,59 @@
+// Bucket.kt
 package dk.blekinge.dicerolla
 
-import java.io.Serializable
-import java.util.SortedMap
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import kotlinx.serialization.Serializable
+import java.util.*
 
+@Serializable
 data class Bucket(
     val dice: SortedMap<D6, Int>,
     val dicePoolSize: Int,
     var randomDicerollIndex: Int
-) : Serializable {
+) : java.io.Serializable {
 
-    constructor(dicepool: Int, randomDicerollIndex: Int) : this(
-        dice = sortedMapOf(
-            Pair(D6.R1, 0),
-            Pair(D6.R2, 0),
-            Pair(D6.R3, 0),
-            Pair(D6.R4, 0),
-            Pair(D6.R5, 0),
-            Pair(D6.R6, 0)
-        ),
-        dicePoolSize = dicepool,
-        randomDicerollIndex = randomDicerollIndex
-    )
+    // Convert to Compose-friendly state (if needed)
+    fun toState(): MutableState<Bucket> = mutableStateOf(this)
 
-    constructor() : this(
-        dicepool = 0,
-        randomDicerollIndex = 0
-    )
-
-    fun rollDice(): SortedMap<D6, Int> {
-        return D6.randomDicerolls.subList(
-            fromIndex = randomDicerollIndex,
-            toIndex = dicePoolSize.let { randomDicerollIndex += it; randomDicerollIndex })
-            .map { Pair(it, 1) }
-            .asSequence()
-            .plus(
-                sequenceOf(
-                    Pair(D6.R1, 0),
-                    Pair(D6.R2, 0),
-                    Pair(D6.R3, 0),
-                    Pair(D6.R4, 0),
-                    Pair(D6.R5, 0),
-                    Pair(D6.R6, 0)
-                )
+    companion object {
+        fun create(dicepool: Int = 0, randomDicerollIndex: Int = 0): Bucket {
+            return Bucket(
+                dice = sortedMapOf(
+                    D6.R1 to 0,
+                    D6.R2 to 0,
+                    D6.R3 to 0,
+                    D6.R4 to 0,
+                    D6.R5 to 0,
+                    D6.R6 to 0
+                ),
+                dicePoolSize = dicepool,
+                randomDicerollIndex = randomDicerollIndex
             )
-            .groupingBy { it.first }
-            .fold(
-                0,
-                { accumulatedValue, elementBeingAdded -> accumulatedValue + elementBeingAdded.second })
-            .toSortedMap()
+        }
+
+        fun roll(bucket: Bucket): Bucket {
+            val newRolls = D6.randomDicerolls
+                .subList(
+                    bucket.randomDicerollIndex,
+                    bucket.dicePoolSize.let { bucket.randomDicerollIndex += it; bucket.randomDicerollIndex }
+                )
+                .map { it to 1 }
+                .plus(
+                    sequenceOf(
+                        D6.R1 to 0,
+                        D6.R2 to 0,
+                        D6.R3 to 0,
+                        D6.R4 to 0,
+                        D6.R5 to 0,
+                        D6.R6 to 0
+                    )
+                )
+                .groupingBy { it.first }
+                .fold(0) { acc, item -> acc + item.second }
+                .toSortedMap()
+
+            return bucket.copy(dice = newRolls)
+        }
     }
 }
